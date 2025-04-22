@@ -38,6 +38,8 @@ class Checkout implements Responsable
 
     private ?string $redirectUrl;
 
+    private ?array $enabledVariants = null;
+
     private ?DateTimeInterface $expiresAt;
 
     private ?int $customPrice = null;
@@ -203,6 +205,13 @@ class Checkout implements Responsable
         return $this;
     }
 
+    public function withEnabledVariants(array $enabledVariants): self
+    {
+        $this->enabledVariants = $enabledVariants;
+
+        return $this;
+    }
+
     public function url(): string
     {
         $response = LemonSqueezy::api('POST', 'checkouts', [
@@ -231,6 +240,7 @@ class Checkout implements Responsable
                         'description' => $this->description,
                         'receipt_thank_you_note' => $this->thankYouNote,
                         'redirect_url' => $this->redirectUrl ?? config('lemon-squeezy.redirect_url'),
+                        'enabled_variants' => $this->enabledVariants,
                     ]),
                     'expires_at' => isset($this->expiresAt) ? $this->expiresAt->format(DateTimeInterface::ATOM) : null,
                 ],
